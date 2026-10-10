@@ -26,28 +26,18 @@ SQLite memory. Default workflows are deterministic and require no API key.
 
 ## Demo Preview
 
-Screenshots and demo GIF can be generated locally after running the app. If these
-files are not present yet, follow the [recording instructions](docs/screenshot_guide.md).
-The image paths below are placeholders; `.gitkeep` files track the asset folders.
+Screenshots and demo GIF can be generated locally after running the app. Until the
+media files are added, use the capture guide below.
 
-<!-- Expected assets: upload-and-index.png, workflow-report.png, pr-simulator.png
-     under docs/assets/screenshots/, and agentops-demo.gif under docs/assets/demo/. -->
+| Preview | Status | Expected file |
+| --- | --- | --- |
+| Repository Upload and Indexing | Pending | `docs/assets/screenshots/upload-and-index.png` |
+| Agent Workflow Report | Pending | `docs/assets/screenshots/workflow-report.png` |
+| Agentic PR Simulator | Pending | `docs/assets/screenshots/pr-simulator.png` |
+| Full Demo GIF | Pending | `docs/assets/demo/agentops-demo.gif` |
 
-### Repository Upload and Indexing
-
-![Repository Upload and Indexing](docs/assets/screenshots/upload-and-index.png)
-
-### Agent Workflow Report
-
-![Agent Workflow Report](docs/assets/screenshots/workflow-report.png)
-
-### Agentic PR Simulator
-
-![Agentic PR Simulator](docs/assets/screenshots/pr-simulator.png)
-
-### Full Demo GIF
-
-![AgentOps Copilot Demo](docs/assets/demo/agentops-demo.gif)
+- [Screenshot guide](docs/screenshot_guide.md)
+- [Demo script](docs/demo_script.md)
 
 ## 2-Minute Demo Video
 

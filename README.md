@@ -26,20 +26,17 @@ SQLite memory. Default workflows are deterministic and require no API key.
 
 ## Demo Preview
 
-Screenshots will be added after the app is captured locally.
+### Repository Upload and Indexing
 
-Recommended screenshots:
+![Repository Upload and Indexing](docs/assets/screenshots/upload-and-index.png)
 
-- Repository upload and indexing
-- AgentOps Workflow Report
-- Agentic PR Simulation
-- Markdown report export
+### AgentOps Workflow Report
 
-Expected paths:
+![AgentOps Workflow Report](docs/assets/screenshots/workflow-report.png)
 
-- `docs/assets/screenshots/upload-and-index.png`
-- `docs/assets/screenshots/workflow-report.png`
-- `docs/assets/screenshots/pr-simulator.png`
+### Agentic PR Simulation
+
+![Agentic PR Simulation](docs/assets/screenshots/pr-simulator.png)
 
 ## How to Run Locally
 

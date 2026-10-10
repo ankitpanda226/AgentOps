@@ -1,0 +1,35 @@
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+include = '\.pyi?$'
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+extend-exclude = [
+    ".venv",
+    ".data",
+    ".chroma",
+    "chromadb",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "agents", "rag", "tools", "memory", "evals"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = [
+    ".venv",
+    ".git",
+    "uploads",
+    "build",
+    "dist",
+    ".chroma",
+    "chromadb",
+]

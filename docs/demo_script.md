@@ -1,110 +1,78 @@
-# Demo Script
+# AgentOps Copilot 2-Minute Demo Script
 
-## 2-Minute Demo
+## Before recording
 
-1. Open with the problem.
+Follow the [local run guide](../README.md#how-to-run-locally). Start both services,
+open Streamlit, and prepare a small repository ZIP. Keep the recent Pytest result
+available in a terminal. Rehearse once so indexing and navigation fit the timing;
+if needed, trim waiting time and disclose the edit. Enable **Simulation only
+(skip test execution)** for this walkthrough.
 
-   "AgentOps Copilot is a local-first multi-agent assistant for developer workflows. It can index a repo, retrieve context, plan work, draft GitHub issues, run tests, critique outputs, and store memory."
+Use this prompt exactly:
 
-2. Show setup.
+```text
+Plan how to add a new tool integration to this repo.
+```
 
-   ```bash
-   make install
-   make test
-   ```
+## 0:00–0:15: What the project is
 
-3. Start the API.
+**Show:** the Streamlit title and repository sidebar.
 
-   ```bash
-   make run
-   ```
+**Say:** “AgentOps Copilot is a local-first multi-agent developer workflow platform.
+It turns repository context into implementation plans, workflow reports, and
+reviewable change proposals. I'll show how it takes a repository upload through
+to a simulated pull-request plan.”
 
-4. Index the project.
+## 0:15–0:35: Upload and index repository
 
-   ```bash
-   curl -X POST http://127.0.0.1:8000/index \
-     -H "Content-Type: application/json" \
-     -d '{"repo_path": "."}'
-   ```
+**Do:** select **Upload repo zip**, choose the ZIP, click **Upload Repository**, then
+**Index Repository**. Point to the indexing confirmation.
 
-5. Ask a repo question.
+**Say:** “I upload a repository ZIP and index it locally. The system chunks supported
+source files and uses RAG over uploaded repositories to retrieve relevant context.
+The active index stays tied to the selected repository, so the workflow can point
+back to the code it used.”
 
-   ```bash
-   curl -X POST http://127.0.0.1:8000/ask \
-     -H "Content-Type: application/json" \
-     -d '{"question": "Explain how the RAG pipeline works"}'
-   ```
+## 0:35–1:05: Ask a developer workflow question
 
-6. Close with the key point.
+**Do:** paste the prompt, click **Ask Agent**, and expand a retrieved context source.
 
-   "The important part is that it is deterministic and local by default, but the LLM and vector store layers are swappable."
+**Say:** “My question is: Plan how to add a new tool integration to this repo.
+LangGraph-style orchestration coordinates planning, retrieval, issue drafting,
+critique, and PR simulation. A deterministic Python fallback supports the same
+flow. Here are the retrieved files and excerpts. These are the evidence behind
+the proposal; I can inspect them before trusting the suggested implementation.”
 
-## 5-Minute Demo
+## 1:05–1:30: Show workflow report and issue draft
 
-1. Show the architecture diagram in `README.md`.
+**Show:** the report's implementation and validation sections, then **Issue Draft**.
+Click **Download Markdown report**.
 
-2. Run tests.
+**Say:** “The workflow report turns that context into concrete implementation steps,
+a validation plan, risks, and next actions. It also includes a GitHub-style issue
+draft with acceptance criteria. I can download the complete Markdown report to
+review or share. This produces a planning artifact without opening a GitHub issue.”
 
-   ```bash
-   make test
-   ```
+## 1:30–1:50: Show Agentic PR Simulator
 
-3. Run evals.
+**Show:** **Agentic PR Simulation**, a candidate file, an expanded pseudo-diff,
+and the readiness explanation.
 
-   ```bash
-   make eval
-   ```
+**Say:** “The Agentic PR Simulator adds a simulated PR plan: candidate files,
+conceptual before-and-after changes, tests, risks, and reviewer questions. It
+explains its merge readiness score using context, test evidence, and critique.
+This score supports review; it does not approve a merge or validate an unwritten patch.”
 
-4. Start the API.
+## 1:50–2:00: Mention safety, tests, and local-first design
 
-   ```bash
-   make run
-   ```
+**Show:** the `134 passed, 1 warning` test result, then return to the app.
 
-5. Health check.
+**Say:** “The project has 134 passing Pytest tests. Test safety blocks broad uploaded
+repo runs. The simulator edits no files, opens no PRs, and needs no paid API.”
 
-   ```bash
-   curl http://127.0.0.1:8000/health
-   ```
+## Recording notes
 
-6. Index the repo.
-
-   ```bash
-   curl -X POST http://127.0.0.1:8000/index \
-     -H "Content-Type: application/json" \
-     -d '{"repo_path": "."}'
-   ```
-
-7. Ask for implementation planning.
-
-   ```bash
-   curl -X POST http://127.0.0.1:8000/ask \
-     -H "Content-Type: application/json" \
-     -d '{"question": "Create an implementation plan for adding GitHub PR support"}'
-   ```
-
-8. Run a test request.
-
-   ```bash
-   curl -X POST http://127.0.0.1:8000/ask \
-     -H "Content-Type: application/json" \
-     -d '{"question": "Analyze a bug and run tests", "repo_path": "tests"}'
-   ```
-
-9. Point out persistent memory.
-
-   The supervisor saves tasks, decisions, tool calls, and final answers when a memory store is configured.
-
-10. Close with extensibility.
-
-   The project is ready for real LLM calls, richer embeddings, GitHub write actions, and a UI.
-
-## Interview Talking Points
-
-- Local-first architecture avoids API keys during demos and CI.
-- `MockLLM` makes tests deterministic while preserving an LLM integration boundary.
-- LangGraph is supported without making it a hard runtime dependency.
-- RAG indexing and vector search are behind small abstractions.
-- SQLite memory creates an audit trail for prior tasks and decisions.
-- Tool calls return structured results, which makes critique and evaluation easier.
-- The eval suite checks output shape, tool routing, and keyword coverage without network calls.
+- These agents are rule-based; describe the orchestration and evidence honestly.
+- Tests shown here validate this project, not the proposed change in the upload.
+- Keep the pointer still while explaining a result and zoom enough to read paths.
+- Use the [capture guide](screenshot_guide.md) for asset filenames and recording steps.

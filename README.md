@@ -1,378 +1,291 @@
 # AgentOps Copilot
 
-[![Tests](https://img.shields.io/badge/tests-passing_placeholder-brightgreen)](#running-tests)
+A local-first multi-agent developer workflow platform that turns repository context
+into implementation plans, workflow reports, GitHub-style issue drafts, and safe
+simulated pull-request plans.
 
-Local-first multi-agent assistant for developer workflow automation.
-
-AgentOps Copilot combines FastAPI, rule-based agents, repository RAG, local developer tools, SQLite memory, LangGraph-compatible orchestration, deterministic evaluation, and optional OpenAI-compatible LLM integration. It runs locally with `MockLLM` behavior by default, so demos and tests do not require API keys.
-
-## Why This Project Matters
-
-Modern developer agents need more than chat. They need repo context, safe tool use, memory, evaluation, and clear orchestration. AgentOps Copilot demonstrates those production building blocks in a compact local project: deterministic by default, modular enough to extend, and honest about where real LLM and GitHub write integrations should plug in.
+Built with FastAPI, Streamlit, repository RAG, LangGraph-style orchestration, and
+SQLite memory. Default workflows are deterministic and require no API key.
 
 ## Features
 
-- FastAPI backend with `/health`, `/index`, `/ask`, and `/run-tests`.
-- Rule-based planner, RAG, docs, test, code, critic, and supervisor agents.
-- LangGraph orchestration with deterministic fallback.
-- Agentic PR Simulator with evidence-linked candidate changes, conceptual diffs,
-  test plans, risk review, reviewer questions, and explained merge readiness.
-- Local RAG over `.py`, `.md`, `.txt`, `.json`, `.yaml`, and `.yml` files.
-- ChromaDB vector store support with in-memory fallback.
-- Deterministic local hash embeddings by default.
-- Safe file tools, repository search, pytest execution, and GitHub issue drafts.
-- SQLite memory for tasks, decisions, and tool calls.
-- Mock LLM default with optional OpenAI-compatible integration.
-- Offline evaluation suite with JSONL tasks and metric scoring.
-- Makefile, Black/Ruff config, docs, and tests for GitHub-ready submission.
+- **Repository upload and indexing:** upload a ZIP or select a local path, then
+  index source files into isolated repository context.
+- **Repository RAG:** local chunking, deterministic hash embeddings, retrieval,
+  and reranking over supported source and documentation files.
+- **Multi-agent workflow:** planning, retrieval, issue drafting, optional testing,
+  critique, PR simulation, and report generation.
+- **Agentic PR Simulator:** candidate files, conceptual before/after summaries,
+  test plans, risks, reviewer questions, and explained merge readiness.
+- **Human-readable reports:** inspect evidence in Streamlit and download the
+  complete Markdown report or simulation JSON.
+- **Test safety:** honor requests to skip tests and block automatic broad test
+  runs against uploaded repositories.
+- **Local memory and evaluation:** SQLite task history, offline evals, and
+  134 passing Pytest tests at the latest validation.
 
-## Architecture
+## Demo Preview
 
-```text
-                 +-----------------------------+
-                 |          FastAPI API         |
-                 | /index /ask /run-tests       |
-                 +--------------+--------------+
-                                |
-                                v
-                 +-----------------------------+
-                 |       SupervisorAgent        |
-                 | LangGraph or fallback graph  |
-                 +--------------+--------------+
-                                |
-       +------------------------+------------------------+
-       |                        |                        |
-       v                        v                        v
-+--------------+        +---------------+        +---------------+
-| PlannerAgent |        |   RAGAgent    |        |   TestAgent   |
-| plan + tools |        | retrieve ctx  |        | run pytest    |
-+--------------+        +-------+-------+        +---------------+
-                               |
-                               v
-                     +-------------------+
-                     | VectorStore/RAG   |
-                     | Chroma or memory  |
-                     +---------+---------+
-                               |
-       +-----------------------+-----------------------+
-       |                       |                       |
-       v                       v                       v
-+--------------+        +--------------+        +---------------+
-|  DocsAgent   |        | CriticAgent  |        |  MemoryStore  |
-| issue draft  |        | review       |        | SQLite        |
-+--------------+        +--------------+        +---------------+
-```
+Screenshots and demo GIF can be generated locally after running the app. If these
+files are not present yet, follow the [recording instructions](docs/screenshot_guide.md).
+The image paths below are placeholders; `.gitkeep` files track the asset folders.
 
-## Quickstart
+<!-- Expected assets: upload-and-index.png, workflow-report.png, pr-simulator.png
+     under docs/assets/screenshots/, and agentops-demo.gif under docs/assets/demo/. -->
+
+### Repository Upload and Indexing
+
+![Repository Upload and Indexing](docs/assets/screenshots/upload-and-index.png)
+
+### Agent Workflow Report
+
+![Agent Workflow Report](docs/assets/screenshots/workflow-report.png)
+
+### Agentic PR Simulator
+
+![Agentic PR Simulator](docs/assets/screenshots/pr-simulator.png)
+
+### Full Demo GIF
+
+![AgentOps Copilot Demo](docs/assets/demo/agentops-demo.gif)
+
+## 2-Minute Demo Video
+
+**Video: Coming soon**
+
+Recommended demo flow:
+
+1. Start the backend and frontend.
+2. Upload a repository ZIP.
+3. Index the repository.
+4. Ask: "Plan how to add a new tool integration to this repo."
+5. Show retrieved context.
+6. Show the workflow report.
+7. Show Agentic PR Simulation.
+8. Download the Markdown report.
+9. Mention 134 passing tests and local-first safety.
+
+Use the [two-minute speaking script](docs/demo_script.md) and
+[screenshot capture guide](docs/screenshot_guide.md) to prepare the recording.
+Start both services before the timed walkthrough.
+
+Suggested recording tools:
+
+- macOS Screenshot/Screen Recording
+- QuickTime Player
+- Loom
+- OBS Studio
+
+## How to Run Locally
+
+Use Python 3.11 or newer. Run commands from the repository root. The commands below
+use macOS/Linux shell syntax; Windows Command Prompt alternatives are noted.
+If your Python installation exposes `python3` instead of `python`, use it to
+create the virtual environment.
+
+### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
-cd agentops-copilot
+git clone https://github.com/ankitpanda226/AgentOps.git
+cd AgentOps
+```
+
+### 2. Create and activate virtual environment
+
+```bash
 python -m venv .venv
 source .venv/bin/activate
-make install
+```
+
+For Windows Command Prompt, activate with:
+
+```bat
+.venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+### 4. Configure environment
+
+```bash
 cp .env.example .env
-make test
 ```
 
-Run the API:
+On Windows Command Prompt, use `copy .env.example .env`.
+No API key is required for default local deterministic mode.
 
-```bash
-make run
-```
-
-Open the interactive docs:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-Start the Streamlit frontend:
-
-```bash
-python -m uvicorn app.main:app --reload --port 8010
-streamlit run ui/streamlit_app.py
-```
-
-## Configuration
-
-The project is local-first. No API key is needed for tests, evals, indexing, or default agent workflow execution.
-
-Optional OpenAI-compatible LLM configuration:
-
-```bash
-OPENAI_API_KEY=your_key_here
-OPENAI_MODEL=gpt-4o-mini
-```
-
-If `OPENAI_API_KEY` is missing or the OpenAI SDK is unavailable, the system falls back to deterministic `MockLLM` behavior.
-
-## Demo Commands
-
-```bash
-make install
-make test
-make eval
-make run
-```
-
-Backend plus UI demo:
-
-```bash
-python -m uvicorn app.main:app --reload --port 8010
-streamlit run ui/streamlit_app.py
-```
-
-In another terminal:
-
-```bash
-curl http://127.0.0.1:8000/health
-```
-
-```bash
-curl -X POST http://127.0.0.1:8000/index \
-  -H "Content-Type: application/json" \
-  -d '{"repo_path": "."}'
-```
-
-```bash
-curl -X POST http://127.0.0.1:8000/ask \
-  -H "Content-Type: application/json" \
-  -d '{"question": "Explain how the RAG pipeline works"}'
-```
-
-## Analyze an Uploaded Repository Zip
-
-Start the backend on the frontend default port:
-
-```bash
-python -m uvicorn app.main:app --reload --port 8010
-```
-
-Start the Streamlit frontend:
-
-```bash
-streamlit run ui/streamlit_app.py
-```
-
-In the sidebar:
-
-1. Select `Upload repo zip`.
-2. Choose a `.zip` file containing a repository.
-3. Click `Upload Repository`.
-4. Click `Index Repository`.
-5. Ask questions in the main text area.
-
-The backend extracts uploaded repositories into `uploads/repos/<repo_id>/`, returns a `repo_id`, and the frontend uses that `repo_id` for indexing and questions.
-
-For large repositories, exclude generated folders before zipping, especially `node_modules`, `.venv`, `build`, `dist`, `.pytest_cache`, and dependency caches.
-
-## Human-Friendly Workflow Reports
-
-AgentOps Copilot returns a Markdown `final_answer` called the AgentOps Workflow Report. Instead of a generic summary, the report converts retrieved repository context into a structured developer workflow:
-
-- request summary
-- relevant files and why they matter
-- recommended developer workflow
-- step-by-step implementation plan
-- testing and validation plan
-- risks and safety checks
-- GitHub issue draft summary
-- final next actions
-
-The report is deterministic and local-first. It is generated from the planner output, retrieved context, issue draft, optional test result, and critic output without requiring external APIs.
-
-## Agentic PR Simulator
-
-Every `/ask` workflow now creates a safe simulated pull-request plan after the
-plan, retrieved context, issue draft, optional test result, and critique are ready.
-The `pr_simulation` response contains `pr_title`, `pr_summary`, `files_changed`,
-`pseudo_diff`, `test_plan`, `risk_review`, `reviewer_questions`,
-`merge_readiness_score`, and `merge_readiness_reason`. Existing API fields remain
-available, and older clients can omit the new optional response field.
-
-The simulator proposes changes for tools, auth/middleware, APIs, bugs, and docs.
-It prioritizes relevant retrieved paths, deduplicates candidates, and produces
-conceptual before/after summaries. It does not edit files, execute tests, create
-commits, open real PRs, or call external APIs.
-
-After indexing, inspect **Agentic PR Simulation** in the UI. Download the complete
-**Markdown report** or the simulation JSON. Enable **Simulation only (skip test
-execution)**, or send `"simulate_pr": true`, to prevent workflow tests even when
-your question asks to run them. This flag is not required to receive a simulation.
-
-Readiness starts at 70: missing context subtracts 25, failed tests subtract 15,
-safety-skipped tests subtract 10, critic warnings subtract 10, and passed tests
-add 10. Scores are clamped to 0–100 and explained. They are planning heuristics,
-not approval to merge or proof that the proposed change works.
-
-See [PR simulator usage, response fields, and scoring](docs/pr_simulator.md)
-and [the workflow lifecycle](docs/workflow.md).
-
-## Large Repository Uploads
-
-The Streamlit frontend is configured for zip uploads up to 1000 MB by default through `.streamlit/config.toml`. This is local-only: uploading and indexing repositories does not create cloud or API costs. Large repositories can still be slow because extraction and indexing use your local CPU, RAM, and disk.
-
-For best results, remove heavy generated folders before creating the zip:
-
-- `.git`
-- `node_modules`
-- `.venv`
-- `dist`
-- `build`
-- `.next`
-- `__pycache__`
-- `target`
-- `coverage`
-
-Example:
-
-```bash
-zip -r my-repo.zip my-repo \
-  -x "*/.git/*" "*/node_modules/*" "*/.venv/*" "*/dist/*" "*/build/*" "*/.next/*" "*/__pycache__/*" "*/target/*" "*/coverage/*"
-```
-
-## Example API Outputs
-
-Health:
-
-```json
-{"status":"ok"}
-```
-
-Index:
-
-```json
-{"indexed_chunks":123}
-```
-
-Ask:
-
-```json
-{
-  "task_id": 1,
-  "plan": {
-    "goal": "Explain how the RAG pipeline works",
-    "steps": ["Analyze the request and identify the desired outcome."]
-  },
-  "context": [
-    {
-      "file_path": "rag/indexer.py",
-      "chunk_id": 0,
-      "text": "..."
-    }
-  ],
-  "issue_draft": {
-    "title": "Explain how the RAG pipeline works",
-    "body": "...",
-    "acceptance_criteria": ["Answer is grounded in retrieved context or inspected files."]
-  },
-  "test_result": null,
-  "critique": {
-    "passed": true,
-    "warnings": [],
-    "missing_items": []
-  },
-  "final_answer": "Planned goal: Explain how the RAG pipeline works..."
-}
-```
-
-Run tests:
-
-```json
-{
-  "success": true,
-  "exit_code": 0,
-  "stdout": "...",
-  "stderr": ""
-}
-```
-
-## Running Tests
-
-```bash
-make test
-```
-
-Equivalent:
+### 5. Run tests
 
 ```bash
 python -m pytest
 ```
 
-## Running the Streamlit UI
+Expected at the latest validation:
 
-Start the backend on the UI default port:
-
-```bash
-python -m uvicorn app.main:app --reload --port 8010
+```text
+134 passed, 1 warning
 ```
 
-Start the frontend in another terminal:
+The existing warning comes from LangGraph's dependency deprecation notice.
+
+### 6. Run backend
 
 ```bash
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8010
+```
+
+Keep this terminal running. The interactive API docs are at
+[localhost:8010/docs](http://127.0.0.1:8010/docs).
+
+### 7. Run frontend
+
+In a second terminal, change into `AgentOps` and activate the same environment:
+
+```bash
+source .venv/bin/activate
 streamlit run ui/streamlit_app.py
 ```
 
-The UI lets you index a repository, ask the agent a question, and inspect the final answer, plan, retrieved context sources, issue draft, test result, and critique.
+On Windows, use the activation command from step 2 before running Streamlit.
 
-## Running Evals
+### 8. Use the app
+
+Open the Streamlit URL printed in the terminal, usually
+[localhost:8501](http://localhost:8501). Keep the sidebar API base URL set to
+`http://127.0.0.1:8010`.
+
+1. Select **Upload repo zip** and choose a repository ZIP.
+2. Click **Upload Repository**.
+3. Click **Index Repository** and wait for confirmation.
+4. Enter the prompt below and click **Ask Agent**.
+
+```text
+Plan how to add a new tool integration to this repo.
+```
+
+## Demo Usage
+
+Use a small repository with readable source files so indexing fits comfortably
+into a short demo. The app also supports **Analyze local path**; choose a path
+and index it before asking questions.
+
+Inspect **Retrieved Context Sources**, the **AgentOps Workflow Report**, and the
+**Issue Draft**. The report explains the request, relevant files, implementation
+steps, validation plan, risks, and next actions. Review **Agentic PR Simulation**,
+then use **Download Markdown report** to export the result.
+
+Enable **Simulation only (skip test execution)** to prevent test execution even
+if the question asks to run tests. This is useful for a predictable recording.
+The simulator also appears in normal workflow responses.
+
+For API-only usage after starting the backend:
 
 ```bash
-make eval
+curl -X POST http://127.0.0.1:8010/index \
+  -H 'Content-Type: application/json' \
+  -d '{"repo_path":"."}'
+
+curl -X POST http://127.0.0.1:8010/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"Plan how to add a new tool integration to this repo.","repo_path":".","simulate_pr":true}'
 ```
 
-The runner loads `evals/tasks.jsonl`, executes deterministic workflows, computes metrics, prints a summary table, and writes `evals/results.json`.
+## Agentic PR Simulator
 
-## Makefile Commands
+Every `/ask` workflow creates a safe simulated pull-request plan after planning,
+retrieval, issue drafting, optional tests, and critique. It includes:
+
+- PR title and summary
+- Up to six deduplicated candidate files and reasons for each change
+- Conceptual before/after summaries, not applicable patches
+- Test plan, risk review, and reviewer questions
+- Merge readiness score with an explanation
+
+The simulator does not edit repository files, execute tests, create commits, open
+real PRs, or call external APIs. Readiness starts at 70 and adjusts for missing
+context, test evidence, and critic warnings. It is a planning heuristic, not
+approval to merge or proof that the proposed change works.
+
+See the [simulator reference](docs/pr_simulator.md) for the exact response fields,
+scoring rules, and request-specific behavior.
+
+## Architecture and Workflow
 
 ```text
-make install  Install Python dependencies
-make test     Run pytest
-make run      Start FastAPI with reload
-make eval     Run deterministic evals
-make clean    Remove caches and generated local artifacts
+Streamlit UI -> FastAPI -> SupervisorAgent
+                              |
+                              v
+Plan -> Retrieve repo context -> Draft issue -> Optional tests
+                                                    |
+                                                    v
+Report + Markdown export <- PR simulation <- Critique
+           |
+           v
+     SQLite task memory
 ```
 
-## Project Structure
+LangGraph orchestrates the agents when available; a deterministic Python fallback
+runs the same workflow. The API uses local in-memory retrieval with hash embeddings
+by default; the vector store abstraction also supports ChromaDB.
 
-```text
-app/      FastAPI app, settings, schemas, and LLM abstraction
-agents/   Planner, RAG, code, test, docs, critic, supervisor, graph
-tools/    File tools, repo search, pytest runner, GitHub helper space
-rag/      Chunking, indexing, retrieval, and vector store abstraction
-memory/   SQLite schema and persistent memory store
-prompts/  Prompt templates for future LLM-backed behavior
-evals/    JSONL tasks, metrics, runner, and generated results
-tests/    Unit and integration tests
-docs/     Architecture, workflow, demo, future work, and evaluation docs
-ui/       Streamlit frontend
+Agents are rule-based, and retrieved excerpts may be incomplete. Review proposed
+changes before implementation. The API is intended for local development and does
+not include production authentication or multi-tenant controls.
+
+See [architecture](docs/architecture.md) and [workflow details](docs/workflow.md).
+
+## Tests
+
+Run the test command in [local setup, step 5](#5-run-tests) from an activated
+virtual environment. The latest result is **134 passed, 1 warning**. Coverage
+includes repository uploads and isolation, API behavior, agent routing, test
+safety, PR simulation scoring, Markdown exports, and UI behavior.
+
+The equivalent Makefile shortcut is `make test`.
+
+## Evals
+
+```bash
+python evals/run_eval.py
 ```
 
-## Resume Bullets
+The offline runner scores JSONL tasks for output fields, tool use, and keyword
+coverage. It writes ignored output to `evals/results.json`. The latest run has
+nine scores of 1.00 and one of 0.75: the latter expects pytest for a request that
+does not explicitly ask to execute tests. Equivalent shortcut: `make eval`.
 
-- Built a local-first multi-agent developer assistant with FastAPI, LangGraph-compatible orchestration, RAG, tool use, SQLite memory, and deterministic evaluations.
-- Implemented modular agents for planning, retrieval, testing, issue drafting, critique, and supervision with optional OpenAI-compatible LLM integration.
-- Designed a ChromaDB-backed vector store abstraction with deterministic local embeddings and in-memory fallback for reliable tests.
-- Added a persistent memory layer for tasks, decisions, and tool calls using SQLite with UTC timestamps and foreign-key enforcement.
-- Created an offline evaluation harness with JSONL benchmarks, field/tool/keyword metrics, and repeatable local scoring.
-- Packaged the project for GitHub with Makefile commands, Black/Ruff configuration, polished docs, and local-first secret-safe defaults.
+## Troubleshooting
 
-## Roadmap
+- **Frontend cannot connect:** keep the backend running on port `8010` and check
+  that the sidebar API base URL is `http://127.0.0.1:8010`.
+- **No retrieved context:** upload and index the repository again. Confirm it
+  contains supported files; default suffixes are `.py`, `.md`, `.txt`, `.json`,
+  `.yaml`, and `.yml`.
+- **Backend restarted:** uploaded repository IDs and the active index are held
+  in memory. Upload the ZIP again and reindex, or select a local path and reindex.
+- **Large upload:** remove `.git`, `node_modules`, `.venv`, `build`, `dist`,
+  `__pycache__`, `target`, and `coverage` before making the ZIP. Large repos use
+  local CPU, memory, and disk during extraction and indexing.
+- **Uploaded-repository tests skipped:** this is intentional safety behavior
+  (`exit_code: -2`). Use a targeted test path for deliberate validation in an
+  isolated local checkout. The current `/ask` upload guard does not provide a
+  targeted-path override; describing a path in the question does not bypass it.
+- **Streamlit upload limit reached:** check `.streamlit/config.toml`. The current
+  `server.maxUploadSize` is `1000` MB. Restart Streamlit after changing it.
 
-- Add real LLM response synthesis behind the `BaseLLM` interface.
-- Add semantic embedding providers through the vector store abstraction.
-- Add authenticated GitHub issue and PR creation with human approval.
-- Add an MCP server for IDE and agent runtime integration.
-- Add streaming responses for long-running workflows.
-- Add richer safety policies around file writes and command execution.
-- Add a Streamlit or React dashboard.
-- Expand evals with retrieval precision, latency, and hallucination-risk scoring.
+## Docs
 
-## Limitations
-
-- Current agents are rule-based and deterministic, not deeply reasoning LLM agents.
-- GitHub support currently creates safe drafts and only calls the API when a token is explicitly passed.
-- Default hash embeddings are useful for tests but not as strong as semantic embeddings.
-- LangGraph is optional and falls back to a plain Python workflow when unavailable.
-- The API is local-development oriented and does not include auth, rate limiting, or multi-tenant controls.
+- [Two-minute demo script](docs/demo_script.md)
+- [Screenshot and recording guide](docs/screenshot_guide.md)
+- [Agentic PR Simulator](docs/pr_simulator.md)
+- [Workflow](docs/workflow.md)
+- [Architecture](docs/architecture.md)
+- [Uploaded repositories](docs/uploaded_repos.md)
+- [Frontend guide](docs/frontend.md)
+- [Evaluation report](docs/evaluation_report.md)
+- [Future work](docs/future_work.md)

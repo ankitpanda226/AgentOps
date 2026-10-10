@@ -26,45 +26,20 @@ SQLite memory. Default workflows are deterministic and require no API key.
 
 ## Demo Preview
 
-Screenshots and demo GIF can be generated locally after running the app. Until the
-media files are added, use the capture guide below.
+Screenshots will be added after the app is captured locally.
 
-| Preview | Status | Expected file |
-| --- | --- | --- |
-| Repository Upload and Indexing | Pending | `docs/assets/screenshots/upload-and-index.png` |
-| Agent Workflow Report | Pending | `docs/assets/screenshots/workflow-report.png` |
-| Agentic PR Simulator | Pending | `docs/assets/screenshots/pr-simulator.png` |
-| Full Demo GIF | Pending | `docs/assets/demo/agentops-demo.gif` |
+Recommended screenshots:
 
-- [Screenshot guide](docs/screenshot_guide.md)
-- [Demo script](docs/demo_script.md)
+- Repository upload and indexing
+- AgentOps Workflow Report
+- Agentic PR Simulation
+- Markdown report export
 
-## 2-Minute Demo Video
+Expected paths:
 
-**Video: Coming soon**
-
-Recommended demo flow:
-
-1. Start the backend and frontend.
-2. Upload a repository ZIP.
-3. Index the repository.
-4. Ask: "Plan how to add a new tool integration to this repo."
-5. Show retrieved context.
-6. Show the workflow report.
-7. Show Agentic PR Simulation.
-8. Download the Markdown report.
-9. Mention 134 passing tests and local-first safety.
-
-Use the [two-minute speaking script](docs/demo_script.md) and
-[screenshot capture guide](docs/screenshot_guide.md) to prepare the recording.
-Start both services before the timed walkthrough.
-
-Suggested recording tools:
-
-- macOS Screenshot/Screen Recording
-- QuickTime Player
-- Loom
-- OBS Studio
+- `docs/assets/screenshots/upload-and-index.png`
+- `docs/assets/screenshots/workflow-report.png`
+- `docs/assets/screenshots/pr-simulator.png`
 
 ## How to Run Locally
 
@@ -270,8 +245,6 @@ does not explicitly ask to execute tests. Equivalent shortcut: `make eval`.
 
 ## Docs
 
-- [Two-minute demo script](docs/demo_script.md)
-- [Screenshot and recording guide](docs/screenshot_guide.md)
 - [Agentic PR Simulator](docs/pr_simulator.md)
 - [Workflow](docs/workflow.md)
 - [Architecture](docs/architecture.md)
